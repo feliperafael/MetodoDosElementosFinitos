@@ -39,8 +39,7 @@ def pontos_gauss(n):
     if n == 3:
         pontos[0] = 0
         pontos[1] = -np.sqrt(3.0/5.0)
-        pontos[2] = -pontos[1]
-        
+        pontos[2] = -pontos[1]    
     return pontos
 
 #def converte_espaco(x1,x2):
@@ -64,19 +63,15 @@ def calc_matriz_local(k,n,num_elementos):
     if k == 1:
         for i in range(k+1):
             for j in range(k+1):
-                for p in range(): 
-                ke[i][j]    
-                
+                for p in range(k+1): 
+                    ke[i][j] = 0
     elif k == 2:
         print("k=2 nao implementado")
-    
+        
 if __name__ == "__main__":
-
     num_elementos = 5
     ordem_polinomio = 1
-    
+
     x = np.linspace(inicio, fim, num=num_elementos)
     i = 0
-    print converte_espaco(x[i],x[i+1])
-   
-    
+    #print converte_espaco(x[i],x[i+1])
