@@ -87,31 +87,36 @@ def calc_matriz_local(k,n,num_elementos):
     t =  np.linspace(-1, 1, num=num_elementos)
     numero_pontos_de_gauss = k+1
 
-    #constroi matriz local
-    for i in range(k+1):
-        for j in range(k+1):
-            for p in range(numero_pontos_de_gauss):
-                t_pontos_de_gauss = pontos_gauss(numero_pontos_de_gauss)
-                #print t_pontos_de_gauss
-                #print phi_function(k,phi_de_gauss+1,t_pontos_de_gauss)
-                if k == 1: #linear
-                    if i == 0 :
-                        ke[i][j] += 0.5*(1-t_pontos_de_gauss[p])
-                    if i == 1 :
-                        ke[i][j] += 0.5*(1+t_pontos_de_gauss[p])
-                    else:
-                        #print("PHI FUNCTION RETURN ZERO")
-                        ke[i][j] += 0
-                if k == 2: #quadratico
-                    if i == 0 :
-                        ke[i][j] += 0.5*t_pontos_de_gauss[p]*(t_pontos_de_gauss[p]-1)
-                    if i == 1 :
-                        ke[i][j] += -1*(t_pontos_de_gauss[p]-1)*(t_pontos_de_gauss[p]+1)
-                    if i == 2:
-                        ke[i][j] += 0.5*t_pontos_de_gauss[p]*(t_pontos_de_gauss[p]+1)
-                #print ke
-   
+    for a in range(dimensao_matriz_global - k): #dimensao - grau
+        #constroi matriz local
+        ke = np.zeros(((k+1),(k+1)))
+        for i in range(k+1):
+            for j in range(k+1):
+                for p in range(numero_pontos_de_gauss):
+                    t_pontos_de_gauss = pontos_gauss(numero_pontos_de_gauss)
+                    #print t_pontos_de_gauss
+                    #print phi_function(k,phi_de_gauss+1,t_pontos_de_gauss)
+                    if k == 1: #linear
+                        if i == 0 :
+                            ke[i][j] += 0.5*(1-t_pontos_de_gauss[p])
+                        if i == 1 :
+                            ke[i][j] += 0.5*(1+t_pontos_de_gauss[p])
+                        else:
+                            #print("PHI FUNCTION RETURN ZERO")
+                            ke[i][j] += 0
+                    if k == 2: #quadratico
+                        if i == 0 :
+                            ke[i][j] += 0.5*t_pontos_de_gauss[p]*(t_pontos_de_gauss[p]-1)
+                        if i == 1 :
+                            ke[i][j] += -1*(t_pontos_de_gauss[p]-1)*(t_pontos_de_gauss[p]+1)
+                        if i == 2:
+                            ke[i][j] += 0.5*t_pontos_de_gauss[p]*(t_pontos_de_gauss[p]+1)
+                    print ke
+        for i in range(k+1):
+            for j in range(k+1):
+                K[a+i][a+j] += ke[i][j]
     print ke
+    print K
 if __name__ == "__main__":
     num_elementos = 5
     k = 1 #ordem_polinomio = 1
