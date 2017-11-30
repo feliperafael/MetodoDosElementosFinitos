@@ -129,17 +129,12 @@ def calc_matriz_local(k,n,num_elementos):
                     #print ke
                     print("vetor local")
                     print fe
-        #constroi vetor local
-        print h
-       # for i in range(k+1):
-       #     fe[i] += 1
-       #     print fe
-        
-        
+             
+        #atualiza matriz global   
         for i in range(k+1):
             for j in range(k+1):
                     K[a+i][a+j] += ke[i][j]
-
+        #atualiza vetor local
         for i in range(k+1):
             F[i+a] += fe[i]
     #print ke
@@ -162,10 +157,19 @@ def calc_matriz_local(k,n,num_elementos):
 
     print K
     print F
-    print LA.solve(K,F)
+    solucao = LA.solve(K,F)
+   
+    #solucao = np.insert(solucao, num_elementos-1, 2*np.pi)
+    solucao[4] = 2*np.pi
+    print("Solucao :")
+    print solucao
+    print x
+    plot(solucao)
+    plot(x)
+    #print exata(x)
     
 if __name__ == "__main__":
-    num_elementos = 4 #na real eh numero de pontos 
+    num_elementos = 128 #na real eh numero de pontos 
     k = 1 #ordem_polinomio = 1
 
     x = np.linspace(inicio, fim, num=num_elementos)
