@@ -1,0 +1,62 @@
+fi
+linha i = fi_i
+coluna g = fi_i avaliado em g
+[[ 0.88729833  0.5         0.11270167]
+ [ 0.11270167  0.5         0.88729833]]
+di
+[[-0.5 -0.5 -0.5]
+ [ 0.5  0.5  0.5]]
+
+from numpy.polynomial.legendre import leggauss
+
+p[3],w[3] = leggauss(qtd de pontos de gauss)
+
+#Faz a montagem da matriz K do sistema Kx = F usando integração numérica ------
+def galerkinContinuo(conect,grau,n,x0):
+    r = grau + 2                      #Quantidade de pontos de Gauss
+    p,w = leggauss(r)                 #Pontos e pesos da quadratura 
+    K = np.zeros([grau*n+1,grau*n+1],dtype=np.float64) #Matriz global
+    F = np.zeros(grau*n+1,dtype=np.float64)            #Vetor independente global
+    fi = np.zeros([grau+1,r])         #Armazena funções base de lagrange
+    dfi = np.zeros([grau+1,r])        #Armazena a derivada das funções base de lagrange
+    x = np.zeros(grau*n+1,dtype=np.float64)
+    aux = 0
+    aux2 = 1
+    x[0] = x0
+    
+    #Gera o vetor x contendo a coordenada x de cada ponto
+    #Exemplo (grau = 2, 4 elementos): [0,0.125,0.25,0.375,0.5,0.625,0.75,0.875,1]
+    for i in xrange(n):
+        aux = conect[i,grau+1]/grau
+        for j in range(grau):
+            x[aux2] = x[aux2-1] + aux
+            aux2 = aux2+1
+            
+    #Calcula os polinômios de lagrange nos pontos de Gauss
+    #Em cada linha temos fi_i, onde cada coluna representa fi_i em um ponto de Gauss
+    for g in range(r):
+        fi[:,g],dfi[:,g] = shape(grau,p[g])
+
+    ii = 0
+    #Faz a integração numérica para cada elemento
+    for el in xrange(0,n): #loop em elementos
+        #Matriz e F dos elementos
+        Kel = np.zeros([grau+1,grau+1]) 
+        fEl = np.zeros(grau+1)
+        h = conect[el,grau+1]
+        for g in range(r): #loop em pontos de Gauss
+            for i in range(grau+1):
+                fEl[i] = fEl[i] + Fx(0.5*(x[ii]+x[ii+grau] + p[g]*h)) * fi[i,g] * w[g]
+                for j in range(grau+1):
+                    Kel[i,j] = Kel[i,j] + w[g]* dfi[i,g] * dfi[j,g]
+        ii = ii + grau #faz o salto no vetor x
+        Kel = Kel * (2/h)        
+        fEl = fEl * (h/2)
+        
+        #Após criar a matriz dos elementos, faz o mapeamento para a matriz global
+        for i in range(grau+1):
+            F[int(conect[el,i])] += fEl[i] 
+            for j in range(grau+1):
+                K[int(conect[el,i]),int(conect[el,j])] += Kel[i,j]
+    
+    return K,F,x
