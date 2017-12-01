@@ -11,12 +11,12 @@ def du(x):
 def exata(x):
 	return np.sin(2*np.pi*x)
 
-def plot(x):
+def plot(x,y):
 	fig = plt.figure()
 	ax = plt.subplot(111)
 	plt.xlabel('x')
 	plt.ylabel('u')
-	ax.plot(x,exata(x),'r')
+	ax.plot(x,y,'r')
 	plt.show()
 
 def solucao_aproximada(x):
@@ -135,10 +135,10 @@ def solucao_aproximada(nint,grau,nel):
 		#atualiza matriz global   
 		for i in range(grau+1):
 			for j in range(grau+1):
-				if i!= j:
-					K[elemento+i][elemento+j] -= ke[i][j]
-				else:				
-					K[elemento+i][elemento+j] += ke[i][j]
+				#if i!= j:
+				#	K[elemento+i][elemento+j] -= ke[i][j]
+				#else:				
+				K[elemento+i][elemento+j] += ke[i][j]
 		#atualiza vetor local
 		for i in range(grau+1):
 			F[i+elemento] += fe[i]
@@ -148,13 +148,13 @@ def solucao_aproximada(nint,grau,nel):
 	K[0][1] = 0
 	K[1][0] = 0
 	
-	#K[dimensao_matriz_global-2][dimensao_matriz_global-1] = 0
-	#K[dimensao_matriz_global-1][dimensao_matriz_global-2] = 0
+	K[dimensao_matriz_global-2][dimensao_matriz_global-1] = 0
+	K[dimensao_matriz_global-1][dimensao_matriz_global-2] = 0
 	
 	F[0] = 0
 	F[1] += 0/h
 	F[dimensao_matriz_global-1] = 2*np.pi
-	#F[dimensao_matriz_global-2] += 2*np.pi/h
+	F[dimensao_matriz_global-2] +=2*np.pi/h
 
 	print K
 	print F
@@ -162,8 +162,10 @@ def solucao_aproximada(nint,grau,nel):
    
 	#solucao = np.insert(solucao, num_elementos-1, 2*np.pi)
 	#solucao[4] = 2*np.pi
-	print("Solucao :",solucao)
-
+	print("\nSolucao :",solucao)
+	print("exata :",exata(x))
+	plot(x,solucao)
+	plot(np.linspace(inicio, fim, num=10000),exata(np.linspace(inicio, fim, num=10000)))
 	print F
 	print K
 if __name__ == "__main__":
