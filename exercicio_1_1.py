@@ -11,6 +11,8 @@ def du(x):
 def exata(x):
 	return np.sin(2*np.pi*x)
 
+def erro_l2():
+        print("ola")
 def plot(x,y):
 	fig = plt.figure()
 	ax = plt.subplot(111)
@@ -104,8 +106,8 @@ def dphi_function(i,t):
 	print("ERROR PHI FUNCTION")
 
 def solucao_aproximada(nint,grau,nel):
-	qtd_de_pontos_de_gauss = 2
-	p,w = leggauss(qtd_de_pontos_de_gauss)
+	qtd_de_pontos_de_gauss = nint
+	p,w = leggauss(nint)
 	dimensao_matriz_global = grau*nel + 1
 	K = np.zeros(((dimensao_matriz_global),(dimensao_matriz_global)))
 	F = np.zeros(dimensao_matriz_global)
@@ -113,24 +115,29 @@ def solucao_aproximada(nint,grau,nel):
 	h = x[1]-x[0]
 	det = h/2.0
 	ii = 0
+	print x
 	for elemento in range(nel): #loop em elementos
+		fe = np.zeros(grau+1)
+		ke = np.zeros(((grau+1),(grau+1)))
 		for l in range(nint): #loop em ponto de gaus
 			
-			fe = np.zeros(grau+1)
-			ke = np.zeros(((grau+1),(grau+1)))
-			if l == 0:				
-				ponto = -1
-			if l == 1:
-				ponto = 1
+			#fe = np.zeros(grau+1)
+			#ke = np.zeros(((grau+1),(grau+1)))
+
 			for i in range(grau+1):
 				ponto = 0.5*(x[ii]+x[ii+grau] + p[l]*h)
-				print("\nponto"+str(ponto))	
-				print("phi(ponto) = "+str(phi_function(i,ponto)))			
-				fe[i] += du(ponto) * phi_function(i,p[l]) * w[l]
+				#print("l :",l)
+				#print("\nponto"+str(ponto))	
+				#print("phi(ponto) = "+str(phi_function(i,ponto)))
+				#print("phi_function : ", l,  ,phi_function(i,p[l]))
+				fe[i] += du(0.5*(x[ii]+x[ii+grau] + p[l]*h)) * phi_function(i,p[l]) * w[l]
 				for j in range(grau+1):
-					ke[i,j] += w[l]* dphi_function(i,p[l]) * dphi_function(i,p[l])
-		print fe*(h/2.0)
-		print ke/h
+					ke[i,j] += w[l]* dphi_function(i,p[l]) * dphi_function(j,p[l])
+		print ke
+		print fe
+		#multiplico por 
+		fe = fe*(h/2.0)
+		ke = ke*(2.0/h)
 		ii = ii + grau
 		#atualiza matriz global   
 		for i in range(grau+1):
@@ -142,22 +149,24 @@ def solucao_aproximada(nint,grau,nel):
 		#atualiza vetor local
 		for i in range(grau+1):
 			F[i+elemento] += fe[i]
-	F *=h/2.0
-	K *= 1.0/h
+	#F *=h/2.0
+	#K *= 1.0/h
 	#aplico condicoes de contorno
 	K[0][1] = 0
 	K[1][0] = 0
+	K[0][0] = 1
 	
-	K[dimensao_matriz_global-2][dimensao_matriz_global-1] = 0
-	K[dimensao_matriz_global-1][dimensao_matriz_global-2] = 0
+	#K[dimensao_matriz_global-2][dimensao_matriz_global-1] = 0
+	#K[dimensao_matriz_global-1][dimensao_matriz_global-2] = 0
 	
 	F[0] = 0
 	F[1] += 0/h
-	F[dimensao_matriz_global-1] = 2*np.pi
-	F[dimensao_matriz_global-2] +=2*np.pi/h
+	F[dimensao_matriz_global-1] += 2*np.pi
+	#F[dimensao_matriz_global-2] +=2*np.pi/h
 
 	print K
 	print F
+	print h
 	solucao = LA.solve(K,F)
    
 	#solucao = np.insert(solucao, num_elementos-1, 2*np.pi)
@@ -165,7 +174,7 @@ def solucao_aproximada(nint,grau,nel):
 	print("\nSolucao :",solucao)
 	print("exata :",exata(x))
 	plot(x,solucao)
-	plot(np.linspace(inicio, fim, num=10000),exata(np.linspace(inicio, fim, num=10000)))
+	#plot(np.linspace(inicio, fim, num=10000),exata(np.linspace(inicio, fim, num=10000)))
 	print F
 	print K
 if __name__ == "__main__":
